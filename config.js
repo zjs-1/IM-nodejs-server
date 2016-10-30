@@ -10,5 +10,7 @@ module.exports = {
 		user: "root",
 		database: "im_db",
 		password: "rootroot"
-	}
+	},
+
+	tokenSecret: "bskjdhkzj"
 }

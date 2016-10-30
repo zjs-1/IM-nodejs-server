@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>接口测试</title>
+	<script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+	<form>
+		<label>API地址:<input type="text" id="api-url"></label>
+		<label>参数:<input type="text" id="api-param"></label>
+		<label>
+			方式:
+			<select name="action" id="api-action">
+				<option value="POST">post</option>
+				<option value="GET">get</option>
+				<option value="DELETE">delete</option>
+				<option value="PUT">put</option>
+				<option value="PATCH">patch</option>
+			</select>
+		</label>
+		<span id="send">GO</span>
+	</form>
+	<div id="result"></div>
+	<script type="text/javascript">
+		$('#send').click(function(event) {
+			var data = JSON.parse($('#api-param').val());
+			$.ajax({
+				url: $('#api-url').val(),
+				type: $('#api-action').val(),
+				data: data,
+				success: function (data, success) {
+					$('#result').text(JSON.stringify(data));
+				}
+			});
+		});
+	</script>
+</body>
+</html>
