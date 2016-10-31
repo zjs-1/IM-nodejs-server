@@ -33,19 +33,21 @@ router.post('/users/token', function (req, res) {
  * 用户注册
  * @param  {string} mobile 用户手机号
  * @param  {string} password 用户密码(md5加密)
+ * @param  {string} nick 用户昵称
  * @param  {int} verify 验证码
  */
 router.post('/users', function (req, res) {
 	var mobile = req.body.mobile;
 	var password = req.body.password;
+	var nick = req.body.nick;
 	var verify = req.body.verify;
 
-	if (!mobile || !password || !verify) {
+	if (!mobile || !password || !verify || !nick) {
 		send.cErr(res, "缺少请求参数", 400);
 		return ;
 	}
 
-	service.register(mobile, password, verify, function (err, data) {
+	service.register(mobile, password, verify, nick, function (err, data) {
 		if (err) {
 			send.sErr(res, err.msg, err.code);
 			return ;
@@ -83,7 +85,7 @@ router.get('/users/id', function (req, res) {
 });
 
 /**
- * 获取用户信息
+ * 设置用户信息
  * @param  {string} token
  * @param {string} head 用户头像
  * @param {string} nick 用户昵称

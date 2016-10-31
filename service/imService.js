@@ -89,7 +89,7 @@ exports.login = function (mobile, password, callback) {
 }
 
 //用户注册
-exports.register = function (mobile, password, verify, callback) {
+exports.register = function (mobile, password, verify, nick, callback) {
 	var error = null;
 	if (verify !== 123456) {
 		error = {
@@ -99,7 +99,7 @@ exports.register = function (mobile, password, verify, callback) {
 		callback && callback(error, null);
 		return ;
 	}
-	DAO.register(mobile, password, function (err, data) {
+	DAO.register(mobile, password, nick, function (err, data) {
 		if (err) {
 			callback && callback (err, data);
 			return ;
@@ -138,7 +138,7 @@ exports.setUserInfo = function (token, head, nick, gender, brief, callback) {
 			return ;
 		}
 
-		DAO.setUserInfo(decoded.userId, head, nick, gender, brief, function (err, data) {
+		DAO.setUserInfo(data, head, nick, gender, brief, function (err, data) {
 			if (err) {
 				callback && callback (err, data);
 				return ;
@@ -158,14 +158,14 @@ exports.getFriendList = function (token, callback) {
 			return ;
 		}
 
-		DAO.getFriendList(decoded.userId, function (err, data) {
+		DAO.getFriendList(data, function (err, data) {
 			if (err) {
 				callback && callback (err, data);
 				return ;
 			}
 
 			var result = data;
-			callback && callback(error, result);
+			callback && callback(err, result);
 		});
 	});
 }
@@ -178,14 +178,14 @@ exports.addFriend = function (token, friendId, callback) {
 			return ;
 		}
 
-		DAO.addFriend(decoded.userId, friendId, function (err, data) {
+		DAO.addFriend(data, friendId, function (err, data) {
 			if (err) {
 				callback && callback (err, data);
 				return ;
 			}
 
 			var result = "添加好友成功";
-			callback && callback(error, result);
+			callback && callback(err, result);
 		});
 	});
 }
@@ -198,14 +198,14 @@ exports.deleteFriend = function (token, friendId, callback) {
 			return ;
 		}
 	
-		DAO.deleteFriend(decoded.userId, friendId, function (err, data) {
+		DAO.deleteFriend(data, friendId, function (err, data) {
 			if (err) {
 				callback && callback (err, data);
 				return ;
 			}
 	
 			var result = "删除好友成功";
-			callback && callback(error, result);
+			callback && callback(err, result);
 		});
 	});
 }
@@ -218,14 +218,14 @@ exports.setFriendRemark = function (token, friendId, remark, callback) {
 			return ;
 		}
 		
-		DAO.setFriendRemark(decoded.userId, friendId, remark, function (err, data) {
+		DAO.setFriendRemark(data, friendId, remark, function (err, data) {
 			if (err) {
 				callback && callback (err, data);
 				return ;
 			}
 
 			var result = "修改备注成功";
-			callback && callback(error, result);
+			callback && callback(err, result);
 		});
 	});
 }
@@ -239,7 +239,7 @@ exports.getUserByMobile = function (mobile, callback) {
 		}
 
 		var result = data;
-		callback && callback(error, result);
+		callback && callback(err, result);
 	});
 }
 
@@ -252,6 +252,6 @@ exports.getUserByNick = function (nick, callback) {
 		}
 
 		var result = data;
-		callback && callback(error, result);
+		callback && callback(err, result);
 	});
 }

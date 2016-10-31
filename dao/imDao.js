@@ -81,11 +81,11 @@ exports.getToken = function (userId, callback) {
 }
 
 //用户注册
-exports.register = function (mobile, password, callback) {
+exports.register = function (mobile, password, nick, callback) {
 	mysql_connect.query('USE ' + tableName);
 	mysql_connect.query(
-		'INSERT INTO user_info (mobile, password) \
-			SELECT "' + mobile + '","' + password + '" \
+		'INSERT INTO user_info (mobile, password, nick) \
+			SELECT "' + mobile + '","' + password + '","' + nick + '" \
 			FROM DUAL \
 			WHERE NOT EXISTS \
 				(SELECT * FROM user_info WHERE mobile="' + mobile + '")',

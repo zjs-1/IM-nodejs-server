@@ -7,6 +7,12 @@
 </head>
 <body>
 	<form>
+		<label>
+			API:
+			<select name="name" id="api-name">
+				
+			</select>
+		</label>
 		<label>API地址:<input type="text" id="api-url"></label>
 		<label>参数:<input type="text" id="api-param"></label>
 		<label>
@@ -23,6 +29,77 @@
 	</form>
 	<div id="result"></div>
 	<script type="text/javascript">
+		var API = [
+			{
+				name: "用户登录",
+				url: "/users/token",
+				type: "POST",
+				param: '{"mobile":"","password":""}'
+			}, 
+			{
+				name: "用户注册",
+				url: "/users",
+				type: "POST",
+				param: '{"mobile":"","password":"","verify":123456,"nick":""}'
+			}, 
+			{
+				name: "获取用户信息",
+				url: "/users/id",
+				type: "GET",
+				param: '{"token":""}'
+			}, 
+			{
+				name: "设置用户信息",
+				url: "/users/id",
+				type: "POST",
+				param: '{"token":"","head":"","nick":"","gender":"","brief":""}'
+			}, 
+			{
+				name: "获取好友列表",
+				url: "/friends",
+				type: "GET",
+				param: '{"token":""}'
+			}, 
+			{
+				name: "添加好友",
+				url: "/friends",
+				type: "POST",
+				param: '{"token":"","userId":}'
+			},
+			{
+				name: "删除好友",
+				url: "/friends/id",
+				type: "DELETE",
+				param: '{"token":"","userId":}'
+			},
+			{
+				name: "修改好友备注",
+				url: "/friends/id",
+				type: "POST",
+				param: '{"token":"","userId":,"remark":""}'
+			}, 
+			{
+				name: "手机号搜索用户",
+				url: "/users/mobile",
+				type: "GET",
+				param: '{"mobile":""}'
+			},
+			{
+				name: "昵称搜索用户",
+				url: "/users/nick",
+				type: "GET",
+				param: '{"nick":""}'
+			}
+		];
+		for (var i = 0; i < API.length; i++) {
+			$('#api-name').append("<option value=" + i + ">" + API[i].name + "</option>");
+		}
+		$('#api-name').change(function(event) {
+			var index = $('#api-name').val();
+			$('#api-url').val(API[index].url);
+			$('#api-param').val(API[index].param);
+			$('#api-action').val(API[index].type);
+		});
 		$('#send').click(function(event) {
 			//var data = JSON.parse($('#api-param').val());
 			var data;
