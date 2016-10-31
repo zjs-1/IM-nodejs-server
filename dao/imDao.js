@@ -36,6 +36,50 @@ exports.login = function (mobile, password, callback) {
 	);
 }
 
+//设置token
+exports.setToken = function (userId, token, callback) {
+	mysql_connect.query('USE ' + tableName);
+	mysql_connect.query(
+		'INSERT INTO user_token (uid,token) \
+		VALUES (' + userId + ',"' + token + '") \
+		ON DUPLICATE KEY UPDATE token="' + token + '"',
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('setToken Error:' + err);
+				error = {
+					msg: "设置token失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//获取token
+exports.getToken = function (userId, callback) {
+	mysql_connect.query('USE ' + tableName);
+	mysql_connect.query(
+		'SELECT * \
+		FROM user_token \
+		WHERE uid=' + userId,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('getToken Error:' + err);
+				error = {
+					msg: "获取token失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
 //用户注册
 exports.register = function (mobile, password, callback) {
 	mysql_connect.query('USE ' + tableName);

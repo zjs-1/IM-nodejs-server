@@ -24,11 +24,18 @@
 	<div id="result"></div>
 	<script type="text/javascript">
 		$('#send').click(function(event) {
-			var data = JSON.parse($('#api-param').val());
+			//var data = JSON.parse($('#api-param').val());
+			var data;
+			if ($('#api-action').val() == "GET") {
+				data = JSON.parse($('#api-param').val());
+			} else {
+				data = $('#api-param').val();
+			}
 			$.ajax({
 				url: $('#api-url').val(),
 				type: $('#api-action').val(),
 				data: data,
+				contentType: "application/json",
 				success: function (data, success) {
 					$('#result').text(JSON.stringify(data));
 				}

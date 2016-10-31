@@ -31,7 +31,7 @@ router.post('/users/token', function (req, res) {
 
 /**
  * 用户注册
- * @param  {int} mobile 用户手机号
+ * @param  {string} mobile 用户手机号
  * @param  {string} password 用户密码(md5加密)
  * @param  {int} verify 验证码
  */

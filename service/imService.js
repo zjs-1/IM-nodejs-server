@@ -2,6 +2,59 @@ var jwt = require('jsonwebtoken');
 var tokenSecret = require('./../config.js').tokenSecret;
 var DAO = require('../dao/imDao.js');
 
+var redis = require('redis');
+var redisConfig = require('./../config.js').redis;
+var redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+
+function verifyToken(token, callback) {
+	jwt.verify(token, tokenSecret, function (err, decoded) {
+		var error = null;
+		if (err) {
+				error = {
+				msg: "token无效",
+				code: 400
+			}
+			callback && callback(error, null);
+			return ;
+		}
+
+		if(!decoded || !decoded.userId) {
+			error = {
+				msg: "token无效",
+				code: 400
+			}
+			callback && callback(error, null);
+			return ;
+		}
+
+		redisClient.get(decoded.userId, function (err, reply) {
+			if (!reply || token !== reply) {
+				console.log(reply);
+				DAO.getToken(decoded.userId, function (err, data) {
+					if (err) {
+						callback && callback (err, data);
+						return ;
+					}
+
+					if (data.length === 0 || data[0].token !== token) {
+						error = {
+							msg: "token无效",
+							code: 400
+						}
+						callback && callback(error, null);
+						return ;
+					} else {
+						redisClient.set(decoded.userId, data[0].token);
+						callback && callback(error, decoded.userId);
+					}
+				});
+			} else {
+				callback && callback(error, decoded.userId);
+			}
+		});
+	});
+}
+
 //用户登录
 exports.login = function (mobile, password, callback) {
 	DAO.login(mobile, password, function (err, data) {
@@ -28,6 +81,9 @@ exports.login = function (mobile, password, callback) {
 		var result = {
 			"token": token
 		};
+
+		DAO.setToken(info.id, token);
+		redisClient.set(info.id, token);
 		callback && callback(error, result);		
 	});
 }
@@ -56,139 +112,121 @@ exports.register = function (mobile, password, verify, callback) {
 
 //获取用户信息
 exports.getUserInfo = function (token, callback) {
-	var decoded = jwt.verify(token, tokenSecret);
-	var error = null;
-	if (!decoded || !decoded.userId) {
-		error = {
-			msg: "token无效",
-			code: 400
-		}
-		callback && callback(error, null);
-		return ;
-	}
-	DAO.getUserInfo(decoded.userId, function (err, data) {
+	verifyToken(token, function (err, data) {
 		if (err) {
 			callback && callback (err, data);
 			return ;
 		}
 
-		var result = data[0];
-		callback && callback(error, result);
+		DAO.getUserInfo(data, function (err, data) {
+			if (err) {
+				callback && callback (err, data);
+				return ;
+			}
+
+			var result = data[0];
+			callback && callback(err, result);
+		});
 	});
 }
 
 //设置用户信息
 exports.setUserInfo = function (token, head, nick, gender, brief, callback) {
-	var decoded = jwt.verify(token, tokenSecret);
-	var error = null;
-	if (!decoded || !decoded.userId) {
-		error = {
-			msg: "token无效",
-			code: 400
-		}
-		callback && callback(error, null);
-		return ;
-	}
-	DAO.setUserInfo(decoded.userId, head, nick, gender, brief, function (err, data) {
+	verifyToken(token, function (err, data) {
 		if (err) {
 			callback && callback (err, data);
 			return ;
 		}
 
-		var result = "修改成功";
-		callback && callback(error, result);
+		DAO.setUserInfo(decoded.userId, head, nick, gender, brief, function (err, data) {
+			if (err) {
+				callback && callback (err, data);
+				return ;
+			}
+
+			var result = "修改成功";
+			callback && callback(err, result);
+		});
 	});
 }
 
 //获取好友列表
 exports.getFriendList = function (token, callback) {
-	var decoded = jwt.verify(token, tokenSecret);
-	var error = null;
-	if (!decoded || !decoded.userId) {
-		error = {
-			msg: "token无效",
-			code: 400
-		}
-		callback && callback(error, null);
-		return ;
-	}
-	DAO.getFriendList(decoded.userId, function (err, data) {
+	verifyToken(token, function (err, data) {
 		if (err) {
 			callback && callback (err, data);
 			return ;
 		}
 
-		var result = data;
-		callback && callback(error, result);
+		DAO.getFriendList(decoded.userId, function (err, data) {
+			if (err) {
+				callback && callback (err, data);
+				return ;
+			}
+
+			var result = data;
+			callback && callback(error, result);
+		});
 	});
 }
 
 //添加好友
 exports.addFriend = function (token, friendId, callback) {
-	var decoded = jwt.verify(token, tokenSecret);
-	var error = null;
-	if (!decoded || !decoded.userId) {
-		error = {
-			msg: "token无效",
-			code: 400
-		}
-		callback && callback(error, null);
-		return ;
-	}
-	DAO.addFriend(decoded.userId, friendId, function (err, data) {
+	verifyToken(token, function (err, data) {
 		if (err) {
 			callback && callback (err, data);
 			return ;
 		}
 
-		var result = "添加好友成功";
-		callback && callback(error, result);
+		DAO.addFriend(decoded.userId, friendId, function (err, data) {
+			if (err) {
+				callback && callback (err, data);
+				return ;
+			}
+
+			var result = "添加好友成功";
+			callback && callback(error, result);
+		});
 	});
 }
 
 //删除好友
 exports.deleteFriend = function (token, friendId, callback) {
-	var decoded = jwt.verify(token, tokenSecret);
-	var error = null;
-	if (!decoded || !decoded.userId) {
-		error = {
-			msg: "token无效",
-			code: 400
-		}
-		callback && callback(error, null);
-		return ;
-	}
-	DAO.deleteFriend(decoded.userId, friendId, function (err, data) {
+	verifyToken(token, function (err, data) {
 		if (err) {
 			callback && callback (err, data);
 			return ;
 		}
-
-		var result = "删除好友成功";
-		callback && callback(error, result);
+	
+		DAO.deleteFriend(decoded.userId, friendId, function (err, data) {
+			if (err) {
+				callback && callback (err, data);
+				return ;
+			}
+	
+			var result = "删除好友成功";
+			callback && callback(error, result);
+		});
 	});
 }
 
 //设置好友备注
 exports.setFriendRemark = function (token, friendId, remark, callback) {
-	var decoded = jwt.verify(token, tokenSecret);
-	var error = null;
-	if (!decoded || !decoded.userId) {
-		error = {
-			msg: "token无效",
-			code: 400
-		}
-		callback && callback(error, null);
-		return ;
-	}
-	DAO.setFriendRemark(decoded.userId, friendId, remark, function (err, data) {
+	verifyToken(token, function (err, data) {
 		if (err) {
 			callback && callback (err, data);
 			return ;
 		}
+		
+		DAO.setFriendRemark(decoded.userId, friendId, remark, function (err, data) {
+			if (err) {
+				callback && callback (err, data);
+				return ;
+			}
 
-		var result = "修改备注成功";
-		callback && callback(error, result);
+			var result = "修改备注成功";
+			callback && callback(error, result);
+		});
 	});
 }
 
