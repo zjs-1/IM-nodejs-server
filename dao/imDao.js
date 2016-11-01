@@ -265,7 +265,7 @@ exports.deleteFriend = function (userId, friendId, callback) {
 }
 
 //设置好友备注
-exports.setFriendRemark = function (token, friendId, remark, callback) {
+exports.setFriendRemark = function (userId, friendId, remark, callback) {
 	mysql_connect.query('USE ' + tableName);
 	mysql_connect.query(
 		'UPDATE user_friend \

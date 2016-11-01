@@ -58,7 +58,7 @@
 	<pre id="result"></pre>
 	<script type="text/javascript">
 		function format(string) {
-			return string.replace(/{"/g, '{\n\t"').replace(/,"/g, ',\n\t"').replace(/]}/g, ']\n}').replace(/)}/g, ')\n}');
+			return string.replace(/{"/g, '{\n\t"').replace(/,"/g, ',\n\t"').replace(/]}/g, ']\n}').replace(/\)}/g, ')\n}');
 		}
 
 		function syntaxHighlight(json) {
@@ -152,6 +152,7 @@
 			$('#api-action').val(API[index].type);
 		});
 		$('#send').click(function(event) {
+			$('#result').html("loading");
 			//var data = JSON.parse($('#api-param').val());
 			var data;
 			if ($('#api-action').val() == "GET") {
@@ -169,6 +170,9 @@
 					console.log(str);
 					console.log(syntaxHighlight(JSON.stringify(str)));
 					$('#result').html(str);
+				},
+				error: function () {
+					$('#result').html("挂了");
 				}
 			});
 		});
