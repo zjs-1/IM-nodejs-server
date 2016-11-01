@@ -4,18 +4,46 @@
 	<meta charset="UTF-8">
 	<title>接口测试</title>
 	<script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+	<style>
+		select, input, textarea {
+			padding: 5px;
+			font-size: 14px;
+			font-family: "Microsoft Yahei";
+		}
+		span {
+			margin: 10px;
+			display: inline-block;
+		}
+		#send {
+			font-size: 14px;
+			font-family: "Microsoft Yahei";
+			background: #96B97D;
+			color: #FFF;
+			padding: 5px 10px;
+			cursor: pointer;
+		}
+		#result {
+			font-size: 14px;
+			font-family: "Microsoft Yahei";
+			width: 500px;
+			border: 1px solid #333;
+			min-height: 200px;
+			word-break: break-all;
+			padding: 5px;
+			margin: 10px;
+		}
+	</style>
 </head>
 <body>
 	<form>
-		<label>
+		<span>
 			API:
 			<select name="name" id="api-name">
-				
 			</select>
-		</label>
-		<label>API地址:<input type="text" id="api-url"></label>
-		<label>参数:<input type="text" id="api-param"></label>
-		<label>
+		</span>
+		<span>API地址:<input type="text" id="api-url"></span><br/>
+		<span>参数:<textarea id="api-param" rows="10" cols="30"></textarea></span>
+		<span>
 			方式:
 			<select name="action" id="api-action">
 				<option value="POST">post</option>
@@ -24,71 +52,94 @@
 				<option value="PUT">put</option>
 				<option value="PATCH">patch</option>
 			</select>
-		</label>
+		</span>
 		<span id="send">GO</span>
 	</form>
-	<div id="result"></div>
+	<pre id="result"></pre>
 	<script type="text/javascript">
+		function format(string) {
+			return string.replace(/{"/g, '{\n\t"').replace(/,"/g, ',\n\t"').replace(/]}/g, ']\n}');
+		}
+
+		function syntaxHighlight(json) {
+		    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+		        var cls = 'number';
+		        if (/^"/.test(match)) {
+		            if (/:$/.test(match)) {
+		                cls = 'key';
+		            } else {
+		                cls = 'string';
+		            }
+		        } else if (/true|false/.test(match)) {
+		            cls = 'boolean';
+		        } else if (/null/.test(match)) {
+		            cls = 'null';
+		        }
+		        return '' + match + '';
+		    });
+		}
+
 		var API = [
 			{
 				name: "用户登录",
 				url: "/users/token",
 				type: "POST",
-				param: '{"mobile":"","password":""}'
+				param: '{"mobile": [string],"password": [string]}'
 			}, 
 			{
 				name: "用户注册",
 				url: "/users",
 				type: "POST",
-				param: '{"mobile":"","password":"","verify":123456,"nick":""}'
+				param: '{"mobile": [string],"password": [string],"verify": [int],"nick": [string]}'
 			}, 
 			{
 				name: "获取用户信息",
 				url: "/users/id",
 				type: "GET",
-				param: '{"token":""}'
+				param: '{"token": [string]}'
 			}, 
 			{
 				name: "设置用户信息",
 				url: "/users/id",
 				type: "POST",
-				param: '{"token":"","head":"","nick":"","gender":"","brief":""}'
+				param: '{"token": [string],"head":(string),"nick":(string),"gender":(string),"brief":(string)}'
 			}, 
 			{
 				name: "获取好友列表",
 				url: "/friends",
 				type: "GET",
-				param: '{"token":""}'
+				param: '{"token": [string]}'
 			}, 
 			{
 				name: "添加好友",
 				url: "/friends",
 				type: "POST",
-				param: '{"token":"","userId":}'
+				param: '{"token": [string],"userId": [int]}'
 			},
 			{
 				name: "删除好友",
 				url: "/friends/id",
 				type: "DELETE",
-				param: '{"token":"","userId":}'
+				param: '{"token": [string],"userId": [int]}'
 			},
 			{
 				name: "修改好友备注",
 				url: "/friends/id",
 				type: "POST",
-				param: '{"token":"","userId":,"remark":""}'
+				param: '{"token": [string],"userId": [int],"remark":(string)}'
 			}, 
 			{
 				name: "手机号搜索用户",
 				url: "/users/mobile",
 				type: "GET",
-				param: '{"mobile":""}'
+				param: '{"mobile": [string]}'
 			},
 			{
 				name: "昵称搜索用户",
 				url: "/users/nick",
 				type: "GET",
-				param: '{"nick":""}'
+				param: '{"nick": [string]}'
 			}
 		];
 		for (var i = 0; i < API.length; i++) {
@@ -97,7 +148,7 @@
 		$('#api-name').change(function(event) {
 			var index = $('#api-name').val();
 			$('#api-url').val(API[index].url);
-			$('#api-param').val(API[index].param);
+			$('#api-param').val(format(API[index].param));
 			$('#api-action').val(API[index].type);
 		});
 		$('#send').click(function(event) {
@@ -114,7 +165,10 @@
 				data: data,
 				contentType: "application/json",
 				success: function (data, success) {
-					$('#result').text(JSON.stringify(data));
+					var str = JSON.stringify(data, undefined, 4);
+					console.log(str);
+					console.log(syntaxHighlight(JSON.stringify(str)));
+					$('#result').html(str);
 				}
 			});
 		});
