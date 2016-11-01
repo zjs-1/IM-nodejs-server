@@ -29,7 +29,6 @@ function verifyToken(token, callback) {
 
 		redisClient.get(decoded.userId, function (err, reply) {
 			if (!reply || token !== reply) {
-				console.log(reply);
 				DAO.getToken(decoded.userId, function (err, data) {
 					if (err) {
 						callback && callback (err, data);

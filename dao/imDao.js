@@ -221,6 +221,8 @@ exports.getFriendList = function (userId, callback) {
 
 //添加好友
 exports.addFriend = function (userId, friendId, callback) {
+	console.log(userId);
+	console.log(friendId);
 	mysql_connect.query('USE ' + tableName);
 	mysql_connect.query(
 		'INSERT INTO user_friend \
@@ -242,7 +244,7 @@ exports.addFriend = function (userId, friendId, callback) {
 }
 
 //删除好友
-exports.addFriend = function (userId, friendId, callback) {
+exports.deleteFriend = function (userId, friendId, callback) {
 	mysql_connect.query('USE ' + tableName);
 	mysql_connect.query(
 		'DELETE FROM user_friend \
@@ -250,7 +252,7 @@ exports.addFriend = function (userId, friendId, callback) {
 		function (err, results, fields) {
 			var error = null;
 			if (err) {
-				console.log('addFriend Error:' + err);
+				console.log('deleteFriend Error:' + err);
 				error = {
 					msg: "删除好友失败",
 					code: "500"

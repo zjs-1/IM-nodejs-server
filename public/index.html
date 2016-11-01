@@ -58,7 +58,7 @@
 	<pre id="result"></pre>
 	<script type="text/javascript">
 		function format(string) {
-			return string.replace(/{"/g, '{\n\t"').replace(/,"/g, ',\n\t"').replace(/]}/g, ']\n}');
+			return string.replace(/{"/g, '{\n\t"').replace(/,"/g, ',\n\t"').replace(/]}/g, ']\n}').replace(/)}/g, ')\n}');
 		}
 
 		function syntaxHighlight(json) {
