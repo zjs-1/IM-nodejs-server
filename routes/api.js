@@ -57,6 +57,30 @@ router.post('/users', function (req, res) {
 	});
 });
 
+
+/**
+ * 用户刷新token
+ * @param  {string} token 登录凭证
+ * @return {string} newToken 登录凭证
+ */
+router.post('/users/new-token', function (req, res) {
+	var token = req.body.token;
+
+	if (!token) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.refreshToken(token, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
 /**
  * 获取用户信息
  * @param  {string} token

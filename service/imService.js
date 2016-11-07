@@ -90,7 +90,7 @@ exports.login = function (mobile, password, callback) {
 //用户注册
 exports.register = function (mobile, password, verify, nick, callback) {
 	var error = null;
-	if (verify !== 123456) {
+	if (parseInt(verify) !== 123456) {
 		error = {
 			msg: "验证码错误",
 			code: 400
@@ -106,6 +106,28 @@ exports.register = function (mobile, password, verify, nick, callback) {
 
 		var result = "注册成功";
 		callback && callback(error, result);	
+	});
+}
+
+//刷新token
+exports.refreshToken = function (token, callback) {
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback (err, data);
+			return ;
+		}
+
+		var newToken = jwt.sign({
+				userId: data,
+				exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7)
+			}, tokenSecret);
+		var result = {
+			"token": newToken
+		};
+
+		DAO.setToken(data, newToken);
+		redisClient.set(data, newToken);
+		callback && callback(null, result);
 	});
 }
 

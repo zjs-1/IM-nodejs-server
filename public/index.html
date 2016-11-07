@@ -55,6 +55,11 @@
 		</span>
 		<span id="send">GO</span>
 	</form>
+	<!-- <form action="/users/token" method="POST">
+		<input type="text" name="mobile">
+		<input type="text" name="password">
+		<input type="submit" value="Submit">
+	</form> -->
 	<pre id="result"></pre>
 	<script type="text/javascript">
 		function format(string) {
@@ -91,7 +96,13 @@
 				name: "用户注册",
 				url: "/users",
 				type: "POST",
-				param: '{"mobile": [string],"password": [string],"verify": [int],"nick": [string]}'
+				param: '{"mobile": [string],"password": [string],"verify": [string],"nick": [string]}'
+			}, 
+			{
+				name: "刷新token",
+				url: "/users/new-token",
+				type: "POST",
+				param: '{"token": [string]}'
 			}, 
 			{
 				name: "获取用户信息",
