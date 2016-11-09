@@ -285,3 +285,188 @@ exports.setFriendRemark = function (userId, friendId, remark, callback) {
 		}
 	);
 }
+
+//根据用户ID列表获取用户信息
+exports.getUserByList = function (groupUsers, callback) {
+	var userIds = '"' + groupUsers.join('","') + '"';
+	mysql_connect.query(
+		'SELECT * \
+		FROM user_info \
+		WHERE id IN (' + userIds + ')',
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('getUserByList Error:' + err);
+				error = {
+					msg: "获取用户列表失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//添加群组
+exports.addGroup = function (groupName, masterId, callback) {
+	mysql_connect.query(
+		'INSERT INTO group_info \
+		(name, masterId) \
+		VALUES ("' + groupName + '","' + masterId + '")',
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('addGroup Error:' + err);
+				error = {
+					msg: "添加群组失败",
+					code: "500"
+				}
+				callback && callback(error, results);
+				return ;
+			}
+
+			var groupId = results.insertId;
+			callback && callback(error, groupId);
+		}
+	);
+}
+
+//根据ID获取群组信息
+exports.getGroupInfo = function (groupId, callback) {
+	mysql_connect.query(
+		'SELECT * \
+		FROM group_info \
+		WHERE id = ' + groupId,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('getGroupInfo Error:' + err);
+				error = {
+					msg: "获取群组信息失败",
+					code: "500"
+				}
+				callback && callback(error, results);
+				return ;
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//获取群员列表
+exports.getGroupUsers = function (groupId, callback) {
+	mysql_connect.query(
+		'SELECT B.id,B.mobile,B.headimg,B.nick \
+		FROM (SELECT * \
+			FROM group_user \
+			WHERE gid = ' + groupId + ') AS A \
+		LEFT JOIN user_info AS B \
+		ON A.uid = B.id',
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('getGroupUsers Error:' + err);
+				error = {
+					msg: "获取组员信息失败",
+					code: "500"
+				}
+				callback && callback(error, results);
+				return ;
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//通过列表添加群组成员
+exports.addGroupUserByList = function (groupId, groupUsers, callback) {
+	var datas = "";
+	groupUsers.forEach(function (currentValue, index, array) {
+		datas += '("' + groupId + '","' + currentValue + '")';
+		if (index < array.length - 1) {
+			datas += ',';
+		}
+	});
+	mysql_connect.query(
+		'INSERT INTO group_user \
+		(gid, uid) \
+		VALUES ' + datas,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('addGroupUserByList Error:' + err);
+				error = {
+					msg: "添加群组成员失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//通过ID添加群组成员
+exports.addGroupUserById = function (groupId, userId, callback) {
+	mysql_connect.query(
+		'INSERT INTO group_user \
+		(gid, uid) \
+		VALUES ("' + groupId + '",' + userId + ')',
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('addGroupUserById Error:' + err);
+				error = {
+					msg: "添加群组成员失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//修改群名
+exports.setGroupName = function (groupId, groupName, callback) {
+	mysql_connect.query(
+		'UPDATE group_info \
+		SET name="' + groupName + '" \
+		WHERE id=' + groupId,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('setGroupName Error:' + err);
+				error = {
+					msg: "设置群名失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//删除群组成员
+exports.deleteGroupUser = function (groupId, userId, callback) {
+	mysql_connect.query(
+		'DELETE FROM group_user \
+		WHERE gid = "' + groupId + '" AND uid = "' + userId,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('deleteGroupUser Error:' + err);
+				error = {
+					msg: "删除群成员失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}

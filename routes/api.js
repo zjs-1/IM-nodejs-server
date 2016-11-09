@@ -281,4 +281,134 @@ router.get('/users/nick', function (req, res) {
 	});
 });
 
+/**
+ * 新建聊天群组
+ * @param  {string} token
+ * @param  {string} groupName 群名(可为空)
+ * @param  {stringList} groupUsers 群用户ID列表
+ * @return {string} groupId 群ID
+ */
+router.post('/groups', function (req, res) {
+	var token = req.body.token;
+	var groupName = req.body.groupName || "";
+	var groupUsers = req.body.groupUsers;
+
+	if (!token || !groupUsers) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.addGroup(token, groupName, groupUsers, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+/**
+ * 根据ID获取群组信息
+ * @param  {string} groupId 群组ID
+ * @return {Object} 群组信息
+ */
+router.get('/groups/id', function (req, res) {
+	var groupId = req.query.groupId;
+
+	if (!groupId) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.getGroupInfoById(groupId, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+/**
+ * 群组添加群员
+ * @param  {string} token
+ * @param  {string} groupId 群组ID
+ * @param  {int} userId 用户ID
+ */
+router.post('/group/users', function (req, res) {
+	var token = req.body.token;
+	var groupId = req.body.groupId;
+	var userId = req.body.userId;
+
+	if (!token || !groupId || !userId) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.addGroupUser(token, groupId, userId, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+/**
+ * 修改群组名称
+ * @param  {string} token
+ * @param  {string} groupId 群组ID
+ * @param  {string} groupName 群组名称
+ * @param  {int} userId 用户ID
+ */
+router.post('/group/name', function (req, res) {
+	var token = req.body.token;
+	var groupId = req.body.groupId;
+	var groupName = req.body.groupName;
+
+	if (!token || !groupId || !groupName) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.setGroupName(token, groupId, groupName, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+/**
+ * 群主删除组员 OR 主动退群
+ * @param  {string} token
+ * @param  {string} groupId 群组ID
+ * @param  {string} userId 组员ID
+ * @param  {int} userId 用户ID
+ */
+router.delete('/group/user', function (req, res) {
+	var token = req.body.token;
+	var groupId = req.body.groupId;
+	var userId = req.body.userId;
+
+	if (!token || !groupId || !userId) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.deleteGroupUser(token, groupId, userId, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
 module.exports = router;

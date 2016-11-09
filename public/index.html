@@ -151,6 +151,30 @@
 				url: "/users/nick",
 				type: "GET",
 				param: '{"nick": [string]}'
+			},
+			{
+				name: "添加群组",
+				url: "/groups",
+				type: "POST",
+				param: '{"token": [string],"groupName": (string),"groupUsers": [stringList]}'
+			},
+			{
+				name: "添加组员",
+				url: "/group/users",
+				type: "POST",
+				param: '{"token": [string],"groupId": [string],"userId": [string]}'
+			},
+			{
+				name: "获取群组信息",
+				url: "/groups/id",
+				type: "GET",
+				param: '{"groupId": [string]}'
+			},
+			{
+				name: "设置群名",
+				url: "/group/name",
+				type: "POST",
+				param: '{"token": [string],"groupId": [string],"groupName": [string]}'
 			}
 		];
 		for (var i = 0; i < API.length; i++) {

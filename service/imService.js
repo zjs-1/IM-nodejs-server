@@ -31,7 +31,7 @@ function verifyToken(token, callback) {
 			if (!reply || token !== reply) {
 				DAO.getToken(decoded.userId, function (err, data) {
 					if (err) {
-						callback && callback (err, data);
+						callback && callback(err, data);
 						return ;
 					}
 
@@ -58,7 +58,7 @@ function verifyToken(token, callback) {
 exports.login = function (mobile, password, callback) {
 	DAO.login(mobile, password, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
@@ -68,7 +68,7 @@ exports.login = function (mobile, password, callback) {
 				msg: "密码或手机错误",
 				code: "400"
 			}
-			callback && callback (error, data);
+			callback && callback(error, data);
 			return ;
 		}
 
@@ -100,7 +100,7 @@ exports.register = function (mobile, password, verify, nick, callback) {
 	}
 	DAO.register(mobile, password, nick, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
@@ -113,7 +113,7 @@ exports.register = function (mobile, password, verify, nick, callback) {
 exports.refreshToken = function (token, callback) {
 	verifyToken(token, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
@@ -135,13 +135,13 @@ exports.refreshToken = function (token, callback) {
 exports.getUserInfo = function (token, callback) {
 	verifyToken(token, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
 		DAO.getUserInfo(data, function (err, data) {
 			if (err) {
-				callback && callback (err, data);
+				callback && callback(err, data);
 				return ;
 			}
 
@@ -155,13 +155,13 @@ exports.getUserInfo = function (token, callback) {
 exports.setUserInfo = function (token, head, nick, gender, brief, callback) {
 	verifyToken(token, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
 		DAO.setUserInfo(data, head, nick, gender, brief, function (err, data) {
 			if (err) {
-				callback && callback (err, data);
+				callback && callback(err, data);
 				return ;
 			}
 
@@ -175,13 +175,13 @@ exports.setUserInfo = function (token, head, nick, gender, brief, callback) {
 exports.getFriendList = function (token, callback) {
 	verifyToken(token, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
 		DAO.getFriendList(data, function (err, data) {
 			if (err) {
-				callback && callback (err, data);
+				callback && callback(err, data);
 				return ;
 			}
 
@@ -195,13 +195,13 @@ exports.getFriendList = function (token, callback) {
 exports.addFriend = function (token, friendId, callback) {
 	verifyToken(token, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
 		DAO.addFriend(data, friendId, function (err, data) {
 			if (err) {
-				callback && callback (err, data);
+				callback && callback(err, data);
 				return ;
 			}
 
@@ -215,13 +215,13 @@ exports.addFriend = function (token, friendId, callback) {
 exports.deleteFriend = function (token, friendId, callback) {
 	verifyToken(token, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 	
 		DAO.deleteFriend(data, friendId, function (err, data) {
 			if (err) {
-				callback && callback (err, data);
+				callback && callback(err, data);
 				return ;
 			}
 	
@@ -235,13 +235,13 @@ exports.deleteFriend = function (token, friendId, callback) {
 exports.setFriendRemark = function (token, friendId, remark, callback) {
 	verifyToken(token, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 		
 		DAO.setFriendRemark(data, friendId, remark, function (err, data) {
 			if (err) {
-				callback && callback (err, data);
+				callback && callback(err, data);
 				return ;
 			}
 
@@ -255,7 +255,7 @@ exports.setFriendRemark = function (token, friendId, remark, callback) {
 exports.getUserByMobile = function (mobile, callback) {
 	DAO.getUserByMobile(mobile, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
@@ -268,11 +268,266 @@ exports.getUserByMobile = function (mobile, callback) {
 exports.getUserByNick = function (nick, callback) {
 	DAO.getUserByMobile(nick, function (err, data) {
 		if (err) {
-			callback && callback (err, data);
+			callback && callback(err, data);
 			return ;
 		}
 
 		var result = data;
 		callback && callback(err, result);
+	});
+}
+
+//新增群组
+exports.addGroup = function (token, groupName, groupUsers, callback) {
+	verifyToken(token, function (err, data) {
+		var error = null;
+		var masterId = data;
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+
+		if (groupUsers.length < 2) {
+			error = {
+				msg: "成员列表数量不符合",
+				code: "400"
+			}
+			callback && callback(error, data);
+			return ;
+		}
+
+		if (groupUsers.indexOf(masterId) === -1) {
+			error = {
+				msg: "组长必须在成员列表里",
+				code: "400"
+			}
+			callback && callback(error, data);
+			return ;
+		}
+
+		DAO.getUserByList(groupUsers, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			if (data.length !== groupUsers.length) {
+				error = {
+					msg: "有组员不存在",
+					code: "400"
+				}
+				callback && callback(error, data);
+				return ;
+			}
+
+			if (!groupName) {
+				for (var i = 0, l = data.length; i < l && i < 3; i++) {
+					groupName += data[i].nick;
+					if (i < l-1 && i < 2) {
+						groupName += ",";
+					}
+				}
+				if (data.length > 3) {
+					groupName += "...";
+				}
+			}
+
+			DAO.addGroup(groupName, masterId, function (err, data) {
+				if (err) {
+					callback && callback(err, data);
+					return ;
+				}
+
+				var groupId = data;
+				DAO.addGroupUserByList(groupId, groupUsers, function (err, data) {
+					if (err) {
+						callback && callback(err, data);
+						return ;
+					}
+
+					var result = {
+						groupId: groupId
+					}
+
+					callback && callback(error, result);
+				});
+			});
+		});
+	});
+}
+
+//获取群组信息
+exports.getGroupInfoById = function (groupId, callback) {
+	var error = null;
+	DAO.getGroupInfo(groupId, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+
+		if (data.length < 1) {
+			error = {
+				msg: "群组不存在",
+				code: "400"
+			};
+			callback && callback(error, data);
+			return ;
+		}
+
+		var groupInfo = data[0];
+		DAO.getGroupUsers(groupId, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			groupInfo.member = data || [];
+			callback && callback(error, groupInfo);
+			return ;
+		});
+	});
+}
+
+//群组添加群员
+exports.addGroupUser = function (token, groupId, userId, callback) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+		
+		DAO.getUserInfo(userId, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			if (data.length < 1) {
+				error = {
+					msg: "用户不存在",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			DAO.getGroupInfo(groupId, function (err, data) {
+				if (err) {
+					callback && callback(err, data);
+					return ;
+				}
+
+				if (data.length < 1) {
+					error = {
+						msg: "群组不存在",
+						code: "400"
+					};
+					callback && callback(error, data);
+					return ;
+				}
+
+				DAO.addGroupUserById(groupId, userId, function (err, data) {
+					if (err) {
+						callback && callback(err, data);
+						return ;
+					}
+	
+					var result = "添加组员成功";
+					callback && callback(err, result);
+				});
+			});
+		});
+	});
+}
+
+exports.setGroupName = function (token, groupId, groupName, callback) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+
+		DAO.getGroupInfo(groupId, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			if (data.length < 1) {
+				error = {
+					msg: "群组不存在",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			DAO.setGroupName(groupId, groupName, function (err, data) {
+				if (err) {
+					callback && callback(err, data);
+					return ;
+				}
+	
+				var result = "修改群名成功";
+				callback && callback(err, result);
+			});
+		});
+	});
+}
+
+exports.deleteGroupUser = function (token, groupId, userId, callback) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+		var myId = data;
+
+		DAO.getGroupInfo(groupId, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			if (data.length < 1) {
+				error = {
+					msg: "群组不存在",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			if (data[0].masterId !== myId && userId != myId) {
+				error = {
+					msg: "没有删除权限",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			if (data[0].masterId === userId) {
+				error = {
+					msg: "群主不能被删(先移交群主)",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			DAO.deleteGroupUser(groupId, userId, function (err, data) {
+				if (err) {
+					callback && callback(err, data);
+					return ;
+				}
+	
+				var result = "删除群成员失败";
+				callback && callback(err, result);
+			});
+		});
 	});
 }
