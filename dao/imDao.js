@@ -381,6 +381,29 @@ exports.getGroupUsers = function (groupId, callback) {
 	);
 }
 
+//通过userId获取群组成员(仅为判断用户是否存在于表中)
+exports.getGroupUserById = function (groupId, userId, callback) {
+	mysql_connect.query(
+		'SELECT * \
+		FROM group_user \
+		WHERE gid = ' + groupId + ' AND uid = ' + userId,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('getGroupUserById Error:' + err);
+				error = {
+					msg: "获取组员失败",
+					code: "500"
+				}
+				callback && callback(error, results);
+				return ;
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
 //通过列表添加群组成员
 exports.addGroupUserByList = function (groupId, groupUsers, callback) {
 	var datas = "";
@@ -455,13 +478,34 @@ exports.setGroupName = function (groupId, groupName, callback) {
 exports.deleteGroupUser = function (groupId, userId, callback) {
 	mysql_connect.query(
 		'DELETE FROM group_user \
-		WHERE gid = "' + groupId + '" AND uid = "' + userId,
+		WHERE gid = ' + groupId + ' AND uid = ' + userId,
 		function (err, results, fields) {
 			var error = null;
 			if (err) {
 				console.log('deleteGroupUser Error:' + err);
 				error = {
 					msg: "删除群成员失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}
+
+//设置群主
+exports.setGroupMaster = function (groupId, userId, callback) {
+	mysql_connect.query(
+		'UPDATE group_info \
+		SET masterId = ' + userId +
+		' WHERE id = ' + groupId,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('setGroupMaster Error:' + err);
+				error = {
+					msg: "设置群主失败",
 					code: "500"
 				}
 			}

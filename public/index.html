@@ -175,6 +175,18 @@
 				url: "/group/name",
 				type: "POST",
 				param: '{"token": [string],"groupId": [string],"groupName": [string]}'
+			},
+			{
+				name: "群主踢人(不能踢自己)",
+				url: "/group/user",
+				type: "DELETE",
+				param: '{"token": [string],"groupId": [string],"userId": [string]}'
+			},
+			{
+				name: "转移群主",
+				url: "/group/master",
+				type: "POST",
+				param: '{"token": [string],"groupId": [string],"userId": [string]}'
 			}
 		];
 		for (var i = 0; i < API.length; i++) {

@@ -385,7 +385,7 @@ router.post('/group/name', function (req, res) {
 });
 
 /**
- * 群主删除组员 OR 主动退群
+ * 群主删除组员
  * @param  {string} token
  * @param  {string} groupId 群组ID
  * @param  {string} userId 组员ID
@@ -402,6 +402,33 @@ router.delete('/group/user', function (req, res) {
 	}
 
 	service.deleteGroupUser(token, groupId, userId, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+/**
+ * 转移群主
+ * @param  {string} token
+ * @param  {string} groupId 群组ID
+ * @param  {string} userId 组员ID
+ * @param  {int} userId 用户ID
+ */
+router.post('/group/master', function (req, res) {
+	var token = req.body.token;
+	var groupId = req.body.groupId;
+	var userId = req.body.userId;
+
+	if (!token || !groupId || !userId) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.setGroupMaster(token, groupId, userId, function (err, data) {
 		if (err) {
 			send.sErr(res, err.msg, err.code);
 			return ;

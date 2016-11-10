@@ -441,6 +441,7 @@ exports.addGroupUser = function (token, groupId, userId, callback) {
 	});
 }
 
+//设置群组名
 exports.setGroupName = function (token, groupId, groupName, callback) {
 	var error = null;
 	verifyToken(token, function (err, data) {
@@ -477,6 +478,7 @@ exports.setGroupName = function (token, groupId, groupName, callback) {
 	});
 }
 
+//群主删除组员
 exports.deleteGroupUser = function (token, groupId, userId, callback) {
 	var error = null;
 	verifyToken(token, function (err, data) {
@@ -501,7 +503,7 @@ exports.deleteGroupUser = function (token, groupId, userId, callback) {
 				return ;
 			}
 
-			if (data[0].masterId !== myId && userId != myId) {
+			if (data[0].masterId !== myId) {
 				error = {
 					msg: "没有删除权限",
 					code: "400"
@@ -512,7 +514,7 @@ exports.deleteGroupUser = function (token, groupId, userId, callback) {
 
 			if (data[0].masterId === userId) {
 				error = {
-					msg: "群主不能被删(先移交群主)",
+					msg: "不能删除群主",
 					code: "400"
 				};
 				callback && callback(error, data);
@@ -525,8 +527,71 @@ exports.deleteGroupUser = function (token, groupId, userId, callback) {
 					return ;
 				}
 	
-				var result = "删除群成员失败";
+				var result = "删除群成员成功";
 				callback && callback(err, result);
+			});
+		});
+	});
+}
+
+//指定群主
+exports.setGroupMaster = function (token, groupId, userId, callback) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+		var myId = data;
+
+		DAO.getGroupInfo(groupId, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			if (data.length < 1) {
+				error = {
+					msg: "群组不存在",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			if (data[0].masterId !== myId) {
+				error = {
+					msg: "没有权限",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			DAO.getGroupUserById(groupId, userId, function (err, data) {
+				if (err) {
+					callback && callback(err, data);
+					return ;
+				}
+
+				if (data.length < 1) {
+					error = {
+						msg: "新群主必须在群内",
+						code: "400"
+					};
+					callback && callback(error, data);
+					return ;
+				}
+
+				DAO.setGroupMaster(groupId, userId, function (err, data) {
+					if (err) {
+						callback && callback(err, data);
+						return ;
+					}
+
+					var result = "转移群主成功";
+					callback && callback(error, result);
+				});
 			});
 		});
 	});
