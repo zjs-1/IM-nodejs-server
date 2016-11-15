@@ -438,4 +438,52 @@ router.post('/group/master', function (req, res) {
 	});
 });
 
+/**
+ * 退出群组
+ * @param  {string} token
+ * @param  {string} groupId 群组ID
+ */
+router.delete('/group/me', function (req, res) {
+	var token = req.body.token;
+	var groupId = req.body.groupId;
+
+	if (!token || !groupId) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.exitGroup(token, groupId, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+/**
+ * 解散群组
+ * @param  {string} token
+ * @param  {string} groupId 群组ID
+ */
+router.delete('/group/id', function (req, res) {
+	var token = req.body.token;
+	var groupId = req.body.groupId;
+
+	if (!token || !groupId) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.dissloveGroup(token, groupId, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
 module.exports = router;

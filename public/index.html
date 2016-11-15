@@ -187,6 +187,18 @@
 				url: "/group/master",
 				type: "POST",
 				param: '{"token": [string],"groupId": [string],"userId": [string]}'
+			},
+			{
+				name: "退出群组",
+				url: "/group/me",
+				type: "DELETE",
+				param: '{"token": [string],"groupId": [string]}'
+			},
+			{
+				name: "解散群组",
+				url: "/group/id",
+				type: "DELETE",
+				param: '{"token": [string],"groupId": [string]}'
 			}
 		];
 		for (var i = 0; i < API.length; i++) {

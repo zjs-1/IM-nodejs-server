@@ -514,3 +514,23 @@ exports.setGroupMaster = function (groupId, userId, callback) {
 		}
 	);
 }
+
+//解散群组
+exports.dissolveGroup = function (groupId, callback) {
+	mysql_connect.query(
+		'DELETE FROM group_info \
+		WHERE id = ' + groupId,
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('dissolveGroup Error:' + err);
+				error = {
+					msg: "解散群组失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results);
+		}
+	);
+}

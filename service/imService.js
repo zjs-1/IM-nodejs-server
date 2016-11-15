@@ -596,3 +596,124 @@ exports.setGroupMaster = function (token, groupId, userId, callback) {
 		});
 	});
 }
+
+//退出群组
+exports.exitGroup = function (token, groupId) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+		var myId = data;
+
+		DAO.getGroupInfo(groupId, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			if (data.length < 1) {
+				error = {
+					msg: "群组不存在",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			if (data[0].masterId === myId) {
+				DAO.getGroupUsers(groupId, function (err, data) {
+					if (err) {
+						callback && callback(err, data);
+						return ;
+					}
+
+					var length = data.length;
+					if (length <= 1) {
+						DAO.dissolveGroup(groupId, function (err, data) {
+							if (err) {
+								callback && callback(err, data);
+								return ;
+							}
+
+							callback && callback(err, data);
+						});
+					} else if (length > 1) {
+						var newMasterId;
+						for (i = 0; i < length; i++) {
+							if (data[i].id !== myId) {
+								newMasterId = data[i].id;
+								break;
+							}
+						}
+						DAO.setGroupMaster(groupId, newMasterId, function (err, data) {
+							if (err) {
+								callback && callback(err, data);
+								return ;
+							}
+
+							callback && callback(err, data);
+						});
+					}
+				});
+			} else {
+				DAO.deleteGroupUser(groupId, myId, function (err, data) {
+					if (err) {
+						callback && callback(err, data);
+						return ;
+					}
+	
+					var result = "退群成功";
+					callback && callback(err, result);
+				});
+			}
+		});
+	});
+}
+
+//解散群组
+exports.dissloveGroup = function (token, groupId) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+		var myId = data;
+
+		DAO.getGroupInfo(groupId, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			if (data.length < 1) {
+				error = {
+					msg: "群组不存在",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			if (data[0].masterId !== myId) {
+				error = {
+					msg: "没有解散权限",
+					code: "400"
+				};
+				callback && callback(error, data);
+				return ;
+			}
+
+			DAO.dissolveGroup(groupId, function (err, data) {
+				if (err) {
+					callback && callback(err, data);
+					return ;
+				}
+
+				callback && callback(err, data);
+			});
+		});
+	});
+}
