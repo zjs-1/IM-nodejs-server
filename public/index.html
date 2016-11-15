@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>接口测试</title>
 	<script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+	<script src="./md5.js"></script>
 	<style>
 		select, input, textarea {
 			padding: 5px;
@@ -212,13 +213,18 @@
 		});
 		$('#send').click(function(event) {
 			$('#result').html("loading");
-			//var data = JSON.parse($('#api-param').val());
-			var data;
-			if ($('#api-action').val() == "GET") {
-				data = JSON.parse($('#api-param').val());
-			} else {
-				data = $('#api-param').val();
+			var data = JSON.parse($('#api-param').val());
+
+			if (data.password) {
+				data.password = hex_md5(data.password);
 			}
+			// var data;
+			// if ($('#api-action').val() == "GET") {
+			// 	data = JSON.parse($('#api-param').val());
+			// } else {
+			// 	data = $('#api-param').val();
+			// }
+			data = JSON.stringify(data);
 			$.ajax({
 				url: $('#api-url').val(),
 				type: $('#api-action').val(),

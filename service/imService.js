@@ -598,7 +598,7 @@ exports.setGroupMaster = function (token, groupId, userId, callback) {
 }
 
 //退出群组
-exports.exitGroup = function (token, groupId) {
+exports.exitGroup = function (token, groupId, callback) {
 	var error = null;
 	verifyToken(token, function (err, data) {
 		if (err) {
@@ -673,7 +673,7 @@ exports.exitGroup = function (token, groupId) {
 }
 
 //解散群组
-exports.dissloveGroup = function (token, groupId) {
+exports.dissloveGroup = function (token, groupId, callback) {
 	var error = null;
 	verifyToken(token, function (err, data) {
 		if (err) {
@@ -712,6 +712,7 @@ exports.dissloveGroup = function (token, groupId) {
 					return ;
 				}
 
+				var result = "解散成功";
 				callback && callback(err, data);
 			});
 		});
