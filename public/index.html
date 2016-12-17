@@ -89,115 +89,115 @@
 		var API = [
 			{
 				name: "用户登录",
-				url: "/users/token",
+				url: "./users/token",
 				type: "POST",
 				param: '{"mobile": [string],"password": [string]}'
 			}, 
 			{
 				name: "用户注册",
-				url: "/users",
+				url: "./users",
 				type: "POST",
 				param: '{"mobile": [string],"password": [string],"verify": [string],"nick": [string]}'
 			}, 
 			{
 				name: "刷新token",
-				url: "/users/new-token",
+				url: "./users/new-token",
 				type: "POST",
 				param: '{"token": [string]}'
 			}, 
 			{
 				name: "获取用户信息",
-				url: "/users/id",
+				url: "./users/id",
 				type: "GET",
 				param: '{"token": [string]}'
 			}, 
 			{
 				name: "设置用户信息",
-				url: "/users/id",
+				url: "./users/id",
 				type: "POST",
 				param: '{"token": [string],"head":(string),"nick":(string),"gender":(string),"brief":(string)}'
 			}, 
 			{
 				name: "获取好友列表",
-				url: "/friends",
+				url: "./friends",
 				type: "GET",
 				param: '{"token": [string]}'
 			}, 
 			{
 				name: "添加好友",
-				url: "/friends",
+				url: "./friends",
 				type: "POST",
 				param: '{"token": [string],"userId": [int]}'
 			},
 			{
 				name: "删除好友",
-				url: "/friends/id",
+				url: "./friends/id",
 				type: "DELETE",
 				param: '{"token": [string],"userId": [int]}'
 			},
 			{
 				name: "修改好友备注",
-				url: "/friends/id",
+				url: "./friends/id",
 				type: "POST",
 				param: '{"token": [string],"userId": [int],"remark":(string)}'
 			}, 
 			{
 				name: "手机号搜索用户",
-				url: "/users/mobile",
+				url: "./users/mobile",
 				type: "GET",
 				param: '{"mobile": [string]}'
 			},
 			{
 				name: "昵称搜索用户",
-				url: "/users/nick",
+				url: "./users/nick",
 				type: "GET",
 				param: '{"nick": [string]}'
 			},
 			{
 				name: "添加群组",
-				url: "/groups",
+				url: "./groups",
 				type: "POST",
 				param: '{"token": [string],"groupName": (string),"groupUsers": [stringList]}'
 			},
 			{
 				name: "添加组员",
-				url: "/group/users",
+				url: "./group/users",
 				type: "POST",
 				param: '{"token": [string],"groupId": [string],"userId": [string]}'
 			},
 			{
 				name: "获取群组信息",
-				url: "/groups/id",
+				url: "./groups/id",
 				type: "GET",
 				param: '{"groupId": [string]}'
 			},
 			{
 				name: "设置群名",
-				url: "/group/name",
+				url: "./group/name",
 				type: "POST",
 				param: '{"token": [string],"groupId": [string],"groupName": [string]}'
 			},
 			{
 				name: "群主踢人(不能踢自己)",
-				url: "/group/user",
+				url: "./group/user",
 				type: "DELETE",
 				param: '{"token": [string],"groupId": [string],"userId": [string]}'
 			},
 			{
 				name: "转移群主",
-				url: "/group/master",
+				url: "./group/master",
 				type: "POST",
 				param: '{"token": [string],"groupId": [string],"userId": [string]}'
 			},
 			{
 				name: "退出群组",
-				url: "/group/me",
+				url: "./group/me",
 				type: "DELETE",
 				param: '{"token": [string],"groupId": [string]}'
 			},
 			{
 				name: "解散群组",
-				url: "/group/id",
+				url: "./group/id",
 				type: "DELETE",
 				param: '{"token": [string],"groupId": [string]}'
 			}
@@ -218,13 +218,11 @@
 			if (data.password) {
 				data.password = hex_md5(data.password);
 			}
-			// var data;
-			// if ($('#api-action').val() == "GET") {
-			// 	data = JSON.parse($('#api-param').val());
-			// } else {
-			// 	data = $('#api-param').val();
-			// }
-			data = JSON.stringify(data);
+			if ($('#api-action').val() == "GET") {
+			 	data = JSON.parse($('#api-param').val());
+			} else {
+				data = JSON.stringify(data);
+			}
 			$.ajax({
 				url: $('#api-url').val(),
 				type: $('#api-action').val(),
