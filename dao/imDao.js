@@ -5,13 +5,12 @@ var mysql_connect = null;
 var tableName = "im_db";
 
 if (mysqlConfig) {
-	mysql_connect = mysql.createConnection({
+	mysql_connect = mysql.createPool({
 		host: mysqlConfig.host,
 		user: mysqlConfig.user,
 		database: mysqlConfig.database,
 		password: mysqlConfig.password
 	});
-	mysql_connect.connect();
 }
 
 //用户登录
