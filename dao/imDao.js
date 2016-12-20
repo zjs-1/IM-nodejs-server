@@ -202,7 +202,8 @@ exports.getFriendList = function (userId, callback) {
 	mysql_connect.query(
 		'SELECT info.id, info.mobile, info.headimg, info.nick, info.gender, info.brief, friend.friend_remarks AS remark \
 		FROM user_friend AS friend \
-			LEFT JOIN user_info AS info ON info.id=friend.friend_id AND friend_type=1 AND friend.uid=' + userId,
+			LEFT JOIN user_info AS info ON info.id=friend.friend_id \
+		WHERE friend.friend_type=1 AND friend.uid=' + userId,
 		function (err, results, fields) {
 			var error = null;
 			if (err) {

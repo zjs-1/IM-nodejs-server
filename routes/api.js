@@ -168,7 +168,7 @@ router.get('/friends', function (req, res) {
  */
 router.post('/friends', function (req, res) {
 	var token = req.body.token;
-	var friendId = req.body.userId;
+	var friendId = parseInt(req.body.userId);
 
 	if (!token || !friendId) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -192,7 +192,7 @@ router.post('/friends', function (req, res) {
  */
 router.delete('/friends/id', function (req, res) {
 	var token = req.body.token;
-	var friendId = req.body.userId;
+	var friendId = parseInt(req.body.userId);
 
 	if (!token || !friendId) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -217,7 +217,7 @@ router.delete('/friends/id', function (req, res) {
  */
 router.post('/friends/id', function (req, res) {
 	var token = req.body.token;
-	var friendId = req.body.userId;
+	var friendId = parseInt(req.body.userId);
 	var remark = req.body.remark || "";
 
 	if (!token || !friendId) {
@@ -291,7 +291,11 @@ router.get('/users/nick', function (req, res) {
 router.post('/groups', function (req, res) {
 	var token = req.body.token;
 	var groupName = req.body.groupName || "";
-	var groupUsers = req.body.groupUsers;
+	var groupUsers = [];
+
+	for (var i = 0; i < req.body.groupUsers.length; i++) {
+		groupUsers.push(parseInt(req.body.groupUsers[i]));
+	}
 
 	if (!token || !groupUsers) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -314,7 +318,7 @@ router.post('/groups', function (req, res) {
  * @return {Object} 群组信息
  */
 router.get('/groups/id', function (req, res) {
-	var groupId = req.query.groupId;
+	var groupId = parseInt(req.query.groupId);
 
 	if (!groupId) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -339,8 +343,8 @@ router.get('/groups/id', function (req, res) {
  */
 router.post('/group/users', function (req, res) {
 	var token = req.body.token;
-	var groupId = req.body.groupId;
-	var userId = req.body.userId;
+	var groupId = parseInt(req.body.groupId);
+	var userId = parseInt(req.body.userId);
 
 	if (!token || !groupId || !userId) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -366,7 +370,7 @@ router.post('/group/users', function (req, res) {
  */
 router.post('/group/name', function (req, res) {
 	var token = req.body.token;
-	var groupId = req.body.groupId;
+	var groupId = parseInt(req.body.groupId);
 	var groupName = req.body.groupName;
 
 	if (!token || !groupId || !groupName) {
@@ -393,8 +397,8 @@ router.post('/group/name', function (req, res) {
  */
 router.delete('/group/user', function (req, res) {
 	var token = req.body.token;
-	var groupId = req.body.groupId;
-	var userId = req.body.userId;
+	var groupId = parseInt(req.body.groupId);
+	var userId = parseInt(req.body.userId);
 
 	if (!token || !groupId || !userId) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -420,8 +424,8 @@ router.delete('/group/user', function (req, res) {
  */
 router.post('/group/master', function (req, res) {
 	var token = req.body.token;
-	var groupId = req.body.groupId;
-	var userId = req.body.userId;
+	var groupId = parseInt(req.body.groupId);
+	var userId = parseInt(req.body.userId);
 
 	if (!token || !groupId || !userId) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -445,7 +449,7 @@ router.post('/group/master', function (req, res) {
  */
 router.delete('/group/me', function (req, res) {
 	var token = req.body.token;
-	var groupId = req.body.groupId;
+	var groupId = parseInt(req.body.groupId);
 
 	if (!token || !groupId) {
 		send.cErr(res, "缺少请求参数", 400);
@@ -469,7 +473,7 @@ router.delete('/group/me', function (req, res) {
  */
 router.delete('/group/id', function (req, res) {
 	var token = req.body.token;
-	var groupId = req.body.groupId;
+	var groupId = parseInt(req.body.groupId);
 
 	if (!token || !groupId) {
 		send.cErr(res, "缺少请求参数", 400);
