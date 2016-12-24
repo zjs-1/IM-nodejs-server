@@ -158,7 +158,7 @@ exports.getUserByNick = function (nick, callback) {
 	mysql_connect.query(
 		'SELECT id,mobile,headimg AS head,nick,gender,brief \
 		FROM user_info \
-		WHERE mobile LIKE "%' + nick + '%"',
+		WHERE nick LIKE "%' + nick + '%"',
 		function (err, results, fields) {
 			var error = null;
 			if (err) {
