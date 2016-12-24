@@ -271,7 +271,7 @@ router.get('/users/nick', function (req, res) {
 		return ;
 	}
 
-	service.getUserByMobile(nick, function (err, data) {
+	service.getUserByNick(nick, function (err, data) {
 		if (err) {
 			send.sErr(res, err.msg, err.code);
 			return ;

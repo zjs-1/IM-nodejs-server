@@ -266,7 +266,7 @@ exports.getUserByMobile = function (mobile, callback) {
 
 //根据昵称获取用户
 exports.getUserByNick = function (nick, callback) {
-	DAO.getUserByMobile(nick, function (err, data) {
+	DAO.getUserByNick(nick, function (err, data) {
 		if (err) {
 			callback && callback(err, data);
 			return ;
