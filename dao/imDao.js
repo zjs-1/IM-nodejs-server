@@ -227,7 +227,7 @@ exports.addFriend = function (userId, friendId, callback) {
 	mysql_connect.query(
 		'INSERT INTO user_friend \
 		(uid,friend_id,friend_type) \
-		VALUES (' + userId + ',' + friendId + ',1)',
+		VALUES (' + userId + ',' + friendId + ',1),(' + friendId + ',' + userId + ',1)',
 		function (err, results, fields) {
 			var error = null;
 			if (err) {
@@ -248,7 +248,8 @@ exports.deleteFriend = function (userId, friendId, callback) {
 	mysql_connect.query('USE ' + tableName);
 	mysql_connect.query(
 		'DELETE FROM user_friend \
-		WHERE friend_type=1 AND uid=' + userId + ' AND friend_id=' + friendId,
+		WHERE (friend_type=1 AND uid=' + userId + ' AND friend_id=' + friendId + ') \
+		OR (friend_type=1 AND uid=' + friendId + ' AND friend_id=' + userId + ')',
 		function (err, results, fields) {
 			var error = null;
 			if (err) {
