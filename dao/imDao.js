@@ -535,3 +535,41 @@ exports.dissolveGroup = function (groupId, callback) {
 		}
 	);
 }
+
+//发送群组信息
+exports.sendGroupMessage = function (userId, groupId, content, callback) {
+	mysql_connect.query('INSERT INTO message_to_group \
+		(content, to_gid, from_uid) \
+		VALUES (?,?,?)', [content, groupId, userId],
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('sendGroupMessage Error:' + err);
+				error = {
+					msg: "发送群组信息失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results); 
+		});
+}
+
+//发送个人信息
+exports.sendUserMessage = function (userId, toId, content, callback) {
+	mysql_connect.query('INSERT INTO message_to_user \
+		(content, to_uid, from_uid) \
+		VALUES (?,?,?)', [content, toId, userId],
+		function (err, results, fields) {
+			var error = null;
+			if (err) {
+				console.log('sendUserMessage Error:' + err);
+				error = {
+					msg: "发送个人信息失败",
+					code: "500"
+				}
+			}
+
+			callback && callback(error, results); 
+		});
+}

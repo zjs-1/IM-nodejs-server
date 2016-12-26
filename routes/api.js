@@ -490,4 +490,58 @@ router.delete('/group/id', function (req, res) {
 	});
 });
 
+/**
+ * 发送群组消息
+ * @param  {string} token
+ * @param  {string} groupId 群组ID
+ * @param  {string} content 内容
+ */
+router.post('/group-chat', function (req, res) {
+	var token = req.query.token;
+	var groupId = parseInt(req.query.groupId);
+	var content = req.query.content;
+
+	if (!token || !groupId || !content) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.sendGroupMessage(token, groupId, content, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+/**
+ * 发送个人消息
+ * @param  {string} token
+ * @param  {string} toId 用户ID
+ * @param  {string} content 内容
+ */
+router.post('/user-chat', function (req, res) {
+	var token = req.query.token;
+	var toId = parseInt(req.query.toId);
+	var content = req.query.content;
+
+	if (!token || !toId || !content) {
+		send.cErr(res, "缺少请求参数", 400);
+		return ;
+	}
+
+	service.sendUserMessage(token, toId, content, function (err, data) {
+		if (err) {
+			send.sErr(res, err.msg, err.code);
+			return ;
+		}
+
+		send.ok(res, data, 200);
+	});
+});
+
+
+
 module.exports = router;

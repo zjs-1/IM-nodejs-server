@@ -718,3 +718,45 @@ exports.dissloveGroup = function (token, groupId, callback) {
 		});
 	});
 }
+
+//发送群组信息
+exports.sendGroupMessage = function (token, groupId, content, callback) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+		var myId = data;
+
+		DAO.sendGroupMessage(myId, groupId, content, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			callback && callback(error, data);
+		});
+	});
+}
+
+//发送个人信息
+exports.sendUserMessage = function (token, toId, content, callback) {
+	var error = null;
+	verifyToken(token, function (err, data) {
+		if (err) {
+			callback && callback(err, data);
+			return ;
+		}
+		var myId = data;
+
+		DAO.sendUserMessage(myId, toId, content, function (err, data) {
+			if (err) {
+				callback && callback(err, data);
+				return ;
+			}
+
+			callback && callback(error, data);
+		});
+	});
+}
